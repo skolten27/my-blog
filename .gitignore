@@ -7,3 +7,4 @@ node_modules
 .jekyll-cache/*
 _vendor
 Gemfile.lock
+alpha_vantage_apikey.txt
