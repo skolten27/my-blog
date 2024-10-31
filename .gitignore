@@ -8,3 +8,4 @@ node_modules
 _vendor
 Gemfile.lock
 alpha_vantage_apikey.txt
+API_KEY.txt
