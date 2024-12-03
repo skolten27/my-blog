@@ -11,30 +11,12 @@ import streamlit as st
 
 @st.cache_data
 def load_name_data():
-    names_file = 'https://www.ssa.gov/oact/babynames/names.zip'
-    response = requests.get(names_file)
-    with zipfile.ZipFile(BytesIO(response.content)) as z:
-        dfs = []
-        files = [file for file in z.namelist() if file.endswith('.txt')]
-        for file in files:
-            with z.open(file) as f:
-                df = pd.read_csv(f, header=None)
-                df.columns = ['name','sex','count']
-                df['year'] = int(file[3:7])
-                dfs.append(df)
-        data = pd.concat(dfs, ignore_index=True)
-    data['pct'] = data['count'] / data.groupby(['year', 'sex'])['count'].transform('sum')
+    file = 'combined_data.csv'
+    with open(file) as f:
+        data =pd.read_csv(f, header=None)
     return data
 
-@st.cache_data
-def ohw(df):
-    nunique_year = df.groupby(['name', 'sex'])['year'].nunique()
-    one_hit_wonders = nunique_year[nunique_year == 1].index
-    one_hit_wonder_data = df.set_index(['name', 'sex']).loc[one_hit_wonders].reset_index()
-    return one_hit_wonder_data
-
 data = load_name_data()
-ohw_data = ohw(data)
 
 st.title("Kolten's First Streamlit app!")
 
@@ -45,7 +27,7 @@ with st.sidebar:
     sex_input = st.selectbox("Sex for One Hit Wonders", ["M", "F"])
 
 
-tab1, tab2, tab3, tab4 = st.tabs(['Names', 'Year', 'Trends', 'One Hit Wonders'])
+tab1, tab2, tab3 = st.tabs(['Names', 'Year', 'Trends'])
 
 with tab1: 
     name_data = data[data['name']==input_name].copy()
@@ -63,11 +45,3 @@ with tab2:
 with tab3:
     fig3 = name_trend_plot(data, name=input_name)
     st.plotly_chart(fig3)
-
-with tab4:
-    st.subheader(f"One-Hit Wonders in {year_input}")
-    ohw_result = one_hit_wonders(ohw_data, year=year_input, sex=sex_input)
-    if not ohw_result.empty:
-        st.dataframe(ohw_result)
-    else:
-        st.write(f"No one-hit wonders found for {sex_input} in {year_input}.")
