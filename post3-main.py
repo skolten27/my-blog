@@ -13,7 +13,8 @@ import streamlit as st
 def load_name_data():
     file = 'combined_data.csv'
     with open(file) as f:
-        data =pd.read_csv(f, header=None)
+        data =pd.read_csv(f)
+        data = data.drop(columns=["Unnamed: 0"])
     return data
 
 data = load_name_data()
@@ -21,17 +22,17 @@ data = load_name_data()
 st.title("Kolten's First Streamlit app!")
 
 with st.sidebar:
-    input_name = st.text_input('Enter a name:', 'Mary')
+    stock_ticker = st.radio('Ticker Symbol', ['WEN', 'TSLA', 'AAPL', 'GOOG'])
     year_input = st.slider("Year", min_value=1880, max_value=2023, value=2000)
-    n_names = st.radio('Number of names per sex', [3, 4, 5, 6])
+    n_names = st.text_input('Enter a name:', 'Mary')
     sex_input = st.selectbox("Sex for One Hit Wonders", ["M", "F"])
 
 
 tab1, tab2, tab3 = st.tabs(['Names', 'Year', 'Trends'])
 
 with tab1: 
-    name_data = data[data['name']==input_name].copy()
-    fig = px.line(name_data, x='year', y='count', color='sex')
+    stock_data = data[data['symbol']==stock_ticker].copy()
+    fig = px.line(stock_data, x='year', y='count', color='sex')
     st.plotly_chart(fig)
 
 with tab2:
