@@ -20,7 +20,7 @@ def load_name_data():
 data = load_name_data()
 
 st.markdown("""
-# Analyzing Earnings and Market Trends 📊
+# Analyzing Earnings and Market Trends
 Welcome to the earnings and market trends analysis app! 
 Select a stock ticker and adjust the filters to explore trading volume, earnings surprises, and stock price changes.
 """)
