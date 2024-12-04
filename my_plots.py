@@ -115,7 +115,7 @@ def plot_surprise_vs_price_change(df, symbol, width=800, height=600):
     df_comparison['price_change'] = ((df_comparison['4. close_after'] - df_comparison['4. close_before']) / df_comparison['4. close_before']) * 100
     # Create the scatter plot
     fig = px.scatter(
-        df_filtered,
+        df_comparison,
         x='surprisePercentage',
         y='price_change',
         color_discrete_sequence=['orange'],
