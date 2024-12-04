@@ -31,7 +31,7 @@ def plot_average_trading_volume(df, stock='WEN', width=800, height=600):
         avg_volume,
         x='days_before_earnings',
         y='5. volume',
-        title='Average Trading Volume Around Earnings Release',
+        title=f'Average Trading Volume Around Earnings Release for {stock}',
         markers=True,
     )
     
@@ -92,7 +92,27 @@ def plot_density_surprise_percentage_by_year(df, year=None, width=800, height=60
 def plot_surprise_vs_price_change(df, symbol, width=800, height=600):
     # Filter data for the selected symbol
     df_filtered = df[df['symbol'] == symbol]
-    
+    combined_data = df_filtered
+    combined_data['price_date'] = pd.to_datetime(combined_data['price_date'])
+    combined_data['earnings_release_date'] = pd.to_datetime(combined_data['earnings_release_date'])
+
+    # Ensure '4. close' is a numeric type (convert if necessary)
+    combined_data['4. close'] = pd.to_numeric(combined_data['4. close'], errors='coerce')
+
+    # Calculate the number of days relative to earnings release
+    combined_data['days_before_earnings'] = (combined_data['price_date'] - combined_data['earnings_release_date']).dt.days
+
+    # Filter data for the day before and after earnings release
+    df_before_earnings = combined_data[combined_data['days_before_earnings'] == -1]
+    df_after_earnings = combined_data[combined_data['days_before_earnings'] == 1]
+
+    # Merge the before and after data to calculate price change
+    df_comparison = pd.merge(df_before_earnings[['symbol', 'price_date', '4. close', 'surprisePercentage']],
+                            df_after_earnings[['symbol', 'price_date', '4. close']],
+                            on='symbol', suffixes=('_before', '_after'))
+
+    # Calculate the price change (percentage change from before to after earnings release)
+    df_comparison['price_change'] = ((df_comparison['4. close_after'] - df_comparison['4. close_before']) / df_comparison['4. close_before']) * 100
     # Create the scatter plot
     fig = px.scatter(
         df_filtered,
