@@ -57,5 +57,5 @@ with tab3:
     min_surprise = st.number_input('Minimum Surprise Percentage', value=-1000)
     max_surprise = st.number_input('Maximum Surprise Percentage', value=5000)
     exclude_large_changes = st.checkbox("Exclude stock price changes greater than 100%")
-    fig3 = plot_surprise_vs_price_change(data, symbol=stock_ticker, min_surprise=min_surprise, max_surprise=max_surprise)
+    fig3 = plot_surprise_vs_price_change(data, symbol=stock_ticker, min_surprise=min_surprise, max_surprise=max_surprise, exclude_large_changes= exclude_large_changes)
     st.plotly_chart(fig3)
