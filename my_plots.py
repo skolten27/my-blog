@@ -4,10 +4,9 @@ from plotly.subplots import make_subplots
 import matplotlib.pyplot as plt
 import pandas as pd
 
-def plot_trading_volume_around_earnings(df, stock='WEN', width=800, height=600):
+def plot_average_trading_volume(df, stock='WEN', width=800, height=600):
     # Filter the data for the specified stock
     stock_data = df[df['symbol'] == stock].copy()
-    
     # Ensure date types and calculate the relative days
     stock_data['price_date'] = pd.to_datetime(stock_data['price_date'])
     stock_data['earnings_release_date'] = pd.to_datetime(stock_data['earnings_release_date'])
@@ -19,12 +18,20 @@ def plot_trading_volume_around_earnings(df, stock='WEN', width=800, height=600):
         (stock_data['days_before_earnings'] <= 7)
     ]
     
+    # Group by the relative day and calculate the average trading volume
+    avg_volume = (
+        earnings_window
+        .groupby('days_before_earnings')['5. volume']
+        .mean()
+        .reset_index()
+    )
+    
     # Create the Plotly line chart with an area fill
     fig = px.line(
-        earnings_window,
+        avg_volume,
         x='days_before_earnings',
         y='5. volume',
-        title='Trading Volume Around Earnings Release',
+        title='Average Trading Volume Around Earnings Release',
         markers=True,
     )
     
@@ -35,18 +42,17 @@ def plot_trading_volume_around_earnings(df, stock='WEN', width=800, height=600):
         fill='tozeroy',  # Fills the area below the line
         fillcolor='rgba(255,165,0,0.2)'  # Light orange transparency
     )
-    
     # Customize the layout
     fig.update_layout(
         xaxis_title='Days Before/After Earnings Release',
-        yaxis_title='Trading Volume',
+        yaxis_title='Average Trading Volume',
         width=width,
         height=height,
         plot_bgcolor='white',
         font=dict(size=12)
     )
-    
     return fig
+
 
 
 def name_frequencies_plot(df, year=200, width=800, height=600):
