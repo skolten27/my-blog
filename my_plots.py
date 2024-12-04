@@ -55,11 +55,11 @@ def plot_average_trading_volume(df, stock='WEN', width=800, height=600):
 
 def plot_density_surprise_percentage_by_year(df, year=None, width=800, height=600):
     # Ensure the 'earning_release_date' column is datetime type
-    df['earning_release_date'] = pd.to_datetime(df['earning_release_date'])
+    df['earnings_release_date'] = pd.to_datetime(df['earnings_release_date'])
     
     # Filter the data for the selected year if provided
     if year:
-        df = df[df['earning_release_date'].dt.year == year]
+        df = df[df['earnings_release_date'].dt.year == year]
     
     # Ensure the 'surprisePercentage' column is numeric
     df['surprisePercentage'] = pd.to_numeric(df['surprisePercentage'], errors='coerce')
