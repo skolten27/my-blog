@@ -89,53 +89,41 @@ def plot_density_surprise_percentage_by_year(df, year=None, width=800, height=60
 
     return fig
 
-def plot_surprise_vs_price_change(df, symbol, min_surprise=-1000, max_surprise=5000, width=800, height=600):
+def plot_surprise_vs_price_change_on_earnings(df, symbol, min_surprise=-1000, max_surprise=5000, width=800, height=600):
     # Filter data for the selected symbol
-    df_filtered = df[df['symbol'] == symbol]
-    combined_data = df_filtered.copy()  # Use a copy to avoid modifying the original dataframe
+    df_filtered = df[df['symbol'] == symbol].copy()  # Use a copy to avoid modifying the original dataframe
 
-    combined_data['price_date'] = pd.to_datetime(combined_data['price_date'])
-    combined_data['earnings_release_date'] = pd.to_datetime(combined_data['earnings_release_date'])
+    # Ensure the necessary columns are in the correct format
+    df_filtered['price_date'] = pd.to_datetime(df_filtered['price_date'])
+    df_filtered['earnings_release_date'] = pd.to_datetime(df_filtered['earnings_release_date'])
+    df_filtered['4. close'] = pd.to_numeric(df_filtered['4. close'], errors='coerce')
 
-    # Ensure '4. close' is a numeric type (convert if necessary)
-    combined_data['4. close'] = pd.to_numeric(combined_data['4. close'], errors='coerce')
+    # Filter data to only include rows where price_date == earnings_release_date
+    df_earnings_date = df_filtered[df_filtered['price_date'] == df_filtered['earnings_release_date']]
 
-    # Calculate the number of days relative to earnings release
-    combined_data['days_before_earnings'] = (combined_data['price_date'] - combined_data['earnings_release_date']).dt.days
-
-    # Filter data for the day before and after earnings release
-    df_before_earnings = combined_data[combined_data['days_before_earnings'] == -1]
-    df_after_earnings = combined_data[combined_data['days_before_earnings'] == 1]
-
-    # Merge the before and after data to calculate price change
-    df_comparison = pd.merge(
-        df_before_earnings[['symbol', 'price_date', '4. close', 'surprisePercentage']],
-        df_after_earnings[['symbol', 'price_date', '4. close']],
-        on='symbol', suffixes=('_before', '_after')
-    )
-
-    # Calculate the price change (percentage change from before to after earnings release)
-    df_comparison['price_change'] = (
-        (df_comparison['4. close_after'] - df_comparison['4. close_before']) / df_comparison['4. close_before']
+    # Calculate the price change for the earnings release date
+    # (If you want to calculate it compared to the previous close, ensure that data is appropriately prepared)
+    df_earnings_date['price_change'] = (
+        (df_earnings_date['4. close'] - df_earnings_date['4. close'].shift(1)) / df_earnings_date['4. close'].shift(1)
     ) * 100
 
     # Apply filtering based on min/max surprise percentage
-    df_comparison = df_comparison[
-        (df_comparison['surprisePercentage'] >= min_surprise) & 
-        (df_comparison['surprisePercentage'] <= max_surprise)
+    df_filtered_final = df_earnings_date[
+        (df_earnings_date['surprisePercentage'] >= min_surprise) & 
+        (df_earnings_date['surprisePercentage'] <= max_surprise)
     ]
 
     # Check if there's data to plot
-    if df_comparison.empty:
+    if df_filtered_final.empty:
         raise ValueError(f"No data available for the selected filters: Min Surprise = {min_surprise}, Max Surprise = {max_surprise}")
 
-    # Create the scatter plot using df_comparison
+    # Create the scatter plot
     fig = px.scatter(
-        df_comparison,
+        df_filtered_final,
         x='surprisePercentage',
         y='price_change',
         color_discrete_sequence=['orange'],
-        title=f'Earnings Surprise vs. Stock Price Change for {symbol}',
+        title=f'Earnings Surprise vs. Stock Price Change for {symbol} on Earnings Release Date',
         labels={
             'surprisePercentage': 'Earnings Surprise Percentage',
             'price_change': 'Stock Price Percentage Change'
@@ -150,6 +138,5 @@ def plot_surprise_vs_price_change(df, symbol, min_surprise=-1000, max_surprise=5
         font=dict(size=12),
         title=dict(x=0.5),  # Center the title
     )
-    
+
     return fig
-    
