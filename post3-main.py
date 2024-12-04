@@ -23,12 +23,12 @@ st.title("Kolten's First Streamlit app!")
 
 with st.sidebar:
     stock_ticker = st.radio('Ticker Symbol', ['WEN', 'TSLA', 'AAPL', 'GOOG'])
-    year_input = st.slider("Year", min_value=1880, max_value=2023, value=2000)
+    year_input = st.slider("Year", min_value=1999, max_value=2024, value=2024)
     n_names = st.text_input('Enter a name:', 'Mary')
     sex_input = st.selectbox("Sex for One Hit Wonders", ["M", "F"])
 
 
-tab1, tab2, tab3 = st.tabs(['Trading Volume', 'Surprise', 'Trends'])
+tab1, tab2, tab3 = st.tabs(['Trading Volume', 'Surprise by Year', 'Trends'])
 
 with tab1: 
     stock_data = data[data['symbol']==stock_ticker].copy()
@@ -36,9 +36,9 @@ with tab1:
     st.plotly_chart(fig)
 
 with tab2:
-    fig2 = plot_density_surprise_percentage(data,stock = stock_ticker)
+    fig2 = plot_density_surprise_percentage_by_year(data,year = year_input)
     st.plotly_chart(fig2)
 
 with tab3:
-    fig3 = name_trend_plot(data, name=input_name)
+    fig3 = name_trend_plot(data, name=n_names)
     st.plotly_chart(fig3)

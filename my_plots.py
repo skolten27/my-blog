@@ -53,21 +53,25 @@ def plot_average_trading_volume(df, stock='WEN', width=800, height=600):
     )
     return fig
 
-def plot_density_surprise_percentage(df, stock='WEN', width=800, height=600):
-    # Filter the data by the selected stock symbol
-    stock_data = df[df['symbol'] == stock].copy()
+def plot_density_surprise_percentage_by_year(df, year=None, width=800, height=600):
+    # Ensure the 'earning_release_date' column is datetime type
+    df['earning_release_date'] = pd.to_datetime(df['earning_release_date'])
+    
+    # Filter the data for the selected year if provided
+    if year:
+        df = df[df['earning_release_date'].dt.year == year]
     
     # Ensure the 'surprisePercentage' column is numeric
-    stock_data['surprisePercentage'] = pd.to_numeric(stock_data['surprisePercentage'], errors='coerce')
+    df['surprisePercentage'] = pd.to_numeric(df['surprisePercentage'], errors='coerce')
     
     # Remove NaN values for plotting
-    stock_data_clean = stock_data[stock_data['surprisePercentage'].notna()]
+    df_clean = df[df['surprisePercentage'].notna()]
     
     # Create the density plot using Plotly
     fig = px.density_contour(
-        stock_data_clean,
+        df_clean,
         x='surprisePercentage',
-        title=f'Density Plot of Earnings Surprise Percentage for {stock}'
+        title=f'Density Plot of Earnings Surprise Percentage for {year}' if year else 'Density Plot of Earnings Surprise Percentage'
     )
     
     # Update the layout for better styling
