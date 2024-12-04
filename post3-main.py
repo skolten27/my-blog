@@ -32,7 +32,7 @@ tab1, tab2, tab3 = st.tabs(['Names', 'Year', 'Trends'])
 
 with tab1: 
     stock_data = data[data['symbol']==stock_ticker].copy()
-    fig = px.line(stock_data, x='year', y='count', color='sex')
+    fig = plot_trading_volume_around_earnings(stock_data, stock = stock_ticker)
     st.plotly_chart(fig)
 
 with tab2:
