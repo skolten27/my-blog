@@ -135,9 +135,6 @@ def plot_surprise_vs_price_change(df, symbol, width=800, height=600):
         title=dict(x=0.5),  # Center the title
     )
     
-    # Optionally, adjust the x-axis limits as per your original plot
-    fig.update_xaxes(range=[-1000, 5000])
-    
     return fig
     
 

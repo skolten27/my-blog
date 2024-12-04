@@ -24,8 +24,6 @@ st.title("Kolten's First Streamlit app!")
 with st.sidebar:
     stock_ticker = st.radio('Ticker Symbol', ['WEN', 'TSLA', 'AAPL', 'GOOG'])
     year_input = st.slider("Year", min_value=1999, max_value=2024, value=2024)
-    n_names = st.text_input('Enter a name:', 'Mary')
-    sex_input = st.selectbox("Sex for One Hit Wonders", ["M", "F"])
 
 
 tab1, tab2, tab3 = st.tabs(['Trading Volume', 'Surprise by Year', 'Surprise vs Stock Price Change'])
