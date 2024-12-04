@@ -36,6 +36,7 @@ tab1, tab2, tab3 = st.tabs(['Trading Volume', 'Surprise by Year', 'Surprise vs S
 
 with tab1: 
     st.subheader("📈 Trading Volume Analysis")
+    st.markdown("### Key Question: How does trading volume change as earnings release date is approached across selected stocks?")
     st.write("Analyze the average trading volume for your selected stock. You can change the selected stock using the Ticker Symbol radio on the left")
     stock_data = data[data['symbol']==stock_ticker].copy()
     fig = plot_average_trading_volume(stock_data, stock = stock_ticker)
@@ -43,13 +44,15 @@ with tab1:
 
 with tab2:
     st.subheader("📊 Surprise Percentage Anlysis")
+    st.markdown("### Key Question: How accurate are the analyst at predicting earnings?")
     st.write("Analyze the density of surprise in earnings reports. You can change the selected year using the Year slider on the left")
     fig2 = plot_density_surprise_percentage_by_year(data,year = year_input)
     st.plotly_chart(fig2)
 
 with tab3:   
     st.subheader("📉 Surprise vs. Stock Price Change Analysis")
-    st.write("Analyze the stock price change percentage and earnings suprise percentage for your selected stock. You can change the selected stock using the Ticker Symbol radio on the left. You can adjust the minimum and maximum earnings surprise percentage using the text boxes above to be able to focus on smaller portions and identify trends.")
+    st.markdown("### Key Question: How does suprise affect stock prices if it affects it at all?")
+    st.write("Analyze the stock price change percentage and earnings suprise percentage for your selected stock. You can change the selected stock using the Ticker Symbol radio on the left. You can adjust the minimum and maximum earnings surprise percentage using the text boxes below to be able to focus on smaller portions and identify trends.")
     min_surprise = st.number_input('Minimum Surprise Percentage', value=-1000)
     max_surprise = st.number_input('Maximum Surprise Percentage', value=5000)
     fig3 = plot_surprise_vs_price_change(data, symbol=stock_ticker, min_surprise=min_surprise, max_surprise=max_surprise)
