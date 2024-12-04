@@ -48,7 +48,7 @@ def plot_average_trading_volume(df, stock='WEN', width=800, height=600):
         yaxis_title='Average Trading Volume',
         width=width,
         height=height,
-        plot_bgcolor='white',
+        plot_bgcolor='#1C1C1E',
         font=dict(size=12)
     )
     return fig
@@ -80,7 +80,7 @@ def plot_density_surprise_percentage_by_year(df, year=None, width=800, height=60
         yaxis_title='Density',
         width=width,
         height=height,
-        plot_bgcolor='white',
+        plot_bgcolor='#1C1C1E',
         font=dict(size=12)
     )
     
@@ -122,7 +122,7 @@ def plot_surprise_vs_price_change(df, symbol, min_surprise=-1000, max_surprise=5
         df_filtered_final,
         x='surprisePercentage',
         y='price_change',
-        color_discrete_sequence=['orange'],
+        color_discrete_sequence=['cyan'],
         title=f'Earnings Surprise vs. Stock Price Change for {symbol} on Earnings Release Date',
         labels={
             'surprisePercentage': 'Earnings Surprise Percentage',
@@ -134,7 +134,7 @@ def plot_surprise_vs_price_change(df, symbol, min_surprise=-1000, max_surprise=5
     fig.update_layout(
         width=width,
         height=height,
-        plot_bgcolor='white',
+        plot_bgcolor='#1C1C1E',
         font=dict(size=12)  # Center the title
     )
     #Change point size
