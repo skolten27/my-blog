@@ -53,6 +53,38 @@ def plot_average_trading_volume(df, stock='WEN', width=800, height=600):
     )
     return fig
 
+def plot_density_surprise_percentage(df, stock='WEN', width=800, height=600):
+    # Filter the data by the selected stock symbol
+    stock_data = df[df['symbol'] == stock].copy()
+    
+    # Ensure the 'surprisePercentage' column is numeric
+    stock_data['surprisePercentage'] = pd.to_numeric(stock_data['surprisePercentage'], errors='coerce')
+    
+    # Remove NaN values for plotting
+    stock_data_clean = stock_data[stock_data['surprisePercentage'].notna()]
+    
+    # Create the density plot using Plotly
+    fig = px.density_contour(
+        stock_data_clean,
+        x='surprisePercentage',
+        title=f'Density Plot of Earnings Surprise Percentage for {stock}'
+    )
+    
+    # Update the layout for better styling
+    fig.update_layout(
+        xaxis_title='Earnings Surprise Percentage',
+        yaxis_title='Density',
+        width=width,
+        height=height,
+        plot_bgcolor='white',
+        font=dict(size=12)
+    )
+    
+    # Optional: Add styling to the contour plot
+    fig.update_traces(contours_coloring="fill", colorscale="Blues", line_smoothing=1.3)
+
+    return fig
+
 
 
 def name_frequencies_plot(df, year=200, width=800, height=600):

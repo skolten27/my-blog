@@ -28,7 +28,7 @@ with st.sidebar:
     sex_input = st.selectbox("Sex for One Hit Wonders", ["M", "F"])
 
 
-tab1, tab2, tab3 = st.tabs(['Names', 'Year', 'Trends'])
+tab1, tab2, tab3 = st.tabs(['Trading Volume', 'Surprise', 'Trends'])
 
 with tab1: 
     stock_data = data[data['symbol']==stock_ticker].copy()
@@ -36,12 +36,8 @@ with tab1:
     st.plotly_chart(fig)
 
 with tab2:
-    fig2 = top_names_plot(data, year=year_input, n=n_names)
+    fig2 = plot_density_surprise_percentage(data, stock = stock_ticke)
     st.plotly_chart(fig2)
-
-    st.write('Unique Names Table')
-    output_table = unique_names_summary(data, 2000)
-    st.dataframe(output_table)
 
 with tab3:
     fig3 = name_trend_plot(data, name=input_name)
