@@ -89,10 +89,11 @@ def plot_density_surprise_percentage_by_year(df, year=None, width=800, height=60
 
     return fig
 
-def plot_surprise_vs_price_change(df, symbol, width=800, height=600):
+def plot_surprise_vs_price_change(df, symbol, min_surprise=-1000, max_surprise=5000, width=800, height=600):
     # Filter data for the selected symbol
     df_filtered = df[df['symbol'] == symbol]
-    combined_data = df_filtered
+    combined_data = df_filtered.copy()  # Use a copy to avoid modifying the original dataframe
+
     combined_data['price_date'] = pd.to_datetime(combined_data['price_date'])
     combined_data['earnings_release_date'] = pd.to_datetime(combined_data['earnings_release_date'])
 
@@ -107,13 +108,28 @@ def plot_surprise_vs_price_change(df, symbol, width=800, height=600):
     df_after_earnings = combined_data[combined_data['days_before_earnings'] == 1]
 
     # Merge the before and after data to calculate price change
-    df_comparison = pd.merge(df_before_earnings[['symbol', 'price_date', '4. close', 'surprisePercentage']],
-                            df_after_earnings[['symbol', 'price_date', '4. close']],
-                            on='symbol', suffixes=('_before', '_after'))
+    df_comparison = pd.merge(
+        df_before_earnings[['symbol', 'price_date', '4. close', 'surprisePercentage']],
+        df_after_earnings[['symbol', 'price_date', '4. close']],
+        on='symbol', suffixes=('_before', '_after')
+    )
 
     # Calculate the price change (percentage change from before to after earnings release)
-    df_comparison['price_change'] = ((df_comparison['4. close_after'] - df_comparison['4. close_before']) / df_comparison['4. close_before']) * 100
-    # Create the scatter plot
+    df_comparison['price_change'] = (
+        (df_comparison['4. close_after'] - df_comparison['4. close_before']) / df_comparison['4. close_before']
+    ) * 100
+
+    # Apply filtering based on min/max surprise percentage
+    df_comparison = df_comparison[
+        (df_comparison['surprisePercentage'] >= min_surprise) & 
+        (df_comparison['surprisePercentage'] <= max_surprise)
+    ]
+
+    # Check if there's data to plot
+    if df_comparison.empty:
+        raise ValueError(f"No data available for the selected filters: Min Surprise = {min_surprise}, Max Surprise = {max_surprise}")
+
+    # Create the scatter plot using df_comparison
     fig = px.scatter(
         df_comparison,
         x='surprisePercentage',
@@ -125,7 +141,7 @@ def plot_surprise_vs_price_change(df, symbol, width=800, height=600):
             'price_change': 'Stock Price Percentage Change'
         }
     )
-    
+
     # Update layout for better styling
     fig.update_layout(
         width=width,
@@ -137,179 +153,3 @@ def plot_surprise_vs_price_change(df, symbol, width=800, height=600):
     
     return fig
     
-
-
-def name_frequencies_plot(df, year=200, width=800, height=600):
-    year_data = df[df['year'] == year].copy()
-    name_counts = year_data.groupby(['name', 'sex'])['count'].sum().reset_index()
-    color_map = {"M": "#636EFA", "F": "#EF553B"}
-
-    fig = px.histogram(
-        name_counts, 
-        x='count', 
-        color='sex',  
-        nbins=30, 
-        title=f"Distribution of Name Frequencies by Sex in {year}",
-        facet_col='sex',
-        category_orders={'sex': ['M', 'F']},
-        color_discrete_map=color_map 
-    )
-
-    fig.update_yaxes(type="log", matches="y")
-    fig.update_xaxes(title_text="Number of Occurrences of Each Name", matches="x")
-
-    fig.update_layout(
-        xaxis_title="Number of Occurrences of Each Name",
-        yaxis_title="Frequency (Log Scale)",
-        yaxis_type="log",  # Set y-axis to log scale
-        width=width, height=height
-    )
-    return fig
-
-def name_trend_plot(df, name='John', width=800, height=600):
-    name_data = df[df['name'] == name].copy()
-    color_map = {"M": "#636EFA", "F": "#EF553B"}
-
-    if name_data.empty:
-        print("Name not found in the dataset.")
-    else:
-        # Group by Year and Sex, and calculate total counts
-        #sex_counts = name_data.groupby(['year', 'sex'])['count'].sum().reset_index()
-
-        # Calculate total count per year and male-to-female ratio
-        yearly_counts = name_data.groupby(['year', 'sex']).sum()['count'].unstack(fill_value=0)
-        yearly_counts['Total'] = yearly_counts['M'] + yearly_counts['F']
-        yearly_counts['Male_Ratio'] = yearly_counts['M'] / yearly_counts['Total']
-        yearly_counts['Female_Ratio'] = yearly_counts['F'] / yearly_counts['Total']
-        yearly_counts = yearly_counts.reset_index()
-
-        # Create subplots with shared x-axis
-        fig = make_subplots(
-            rows=2, cols=1, shared_xaxes=True,
-            subplot_titles=("Total Count Over Time", "Sex Balance Ratio Over Time")
-        )
-
-        # Add total count plot
-        fig.add_trace(
-            go.Scatter(x=yearly_counts['year'], y=yearly_counts['M'], mode='lines', name='Male', line=dict(color=color_map['M'])),
-            row=1, col=1
-        )
-
-        fig.add_trace(
-            go.Scatter(x=yearly_counts['year'], y=yearly_counts['F'], mode='lines', name='Female', line=dict(color=color_map['F'])),
-            row=1, col=1
-        )
-
-        # Add male and female ratio plot
-        fig.add_trace(
-            go.Scatter(x=yearly_counts['year'], y=yearly_counts['Male_Ratio'], mode='lines', showlegend=False,  line=dict(color=color_map['M'])),
-            row=2, col=1
-        )
-        fig.add_trace(
-            go.Scatter(x=yearly_counts['year'], y=yearly_counts['Female_Ratio'], mode='lines', showlegend=False, line=dict(color=color_map['F'])),
-            row=2, col=1
-        )
-
-        # Update layout
-        fig.update_layout(
-            title=f"Name Trend and Sex Distribution for '{name}'",
-            xaxis_title="Year",
-            yaxis_title="Total Count",
-            yaxis2_title="Ratio",
-            height=height,
-            width=width
-        )
-
-        return fig
-
-def name_sex_balance_plot(df, name='John'):
-    name_data = df[df['name'] == name].copy()
-    color_map = {"M": "#636EFA", "F": "#EF553B"}
-
-    if name_data.empty:
-        print("Name not found in the dataset.")
-    else:
-        sex_counts = name_data.groupby('sex').sum()['count']
-        male_count = sex_counts.get('M', 0)
-        female_count = sex_counts.get('F', 0)
-        total_count = male_count + female_count
-        if total_count > 0:
-            male_ratio = male_count / total_count
-            female_ratio = female_count / total_count
-
-            fig, ax = plt.subplots(figsize=(10, 2))
-
-            # Create a stacked bar representing male and female ratios
-            ax.barh(0, male_ratio, color=color_map['M'], label='Male')
-            ax.barh(0, female_ratio, left=male_ratio, color=color_map['F'], label='Female')
-
-            # Customize the chart
-            ax.set_xlim(0, 1)
-            ax.set_xticks([0, 0.5, 1])
-            ax.set_xticklabels(['0%', '50%', '100%'])
-            ax.set_yticks([])  # Hide y-axis ticks
-
-            # Add labels to display the ratios
-            ax.text(male_ratio / 2, 0, f"{male_ratio * 100:.1f}%", va='center', 
-                    ha='center', color='white', 
-                    fontweight='bold',
-                    fontsize=20)
-            ax.text(male_ratio / 2, -.25, "male", va='center', 
-                    ha='center', color='white', 
-                    fontweight='bold',
-                    fontsize=20)
-            ax.text(male_ratio + female_ratio / 2, 0, f"{female_ratio * 100:.1f}%", va='center', 
-                    ha='center', color='white', 
-                    fontweight='bold',
-                    fontsize=20)
-            ax.text(male_ratio + female_ratio / 2, -.25, "female", va='center', 
-                    ha='center', color='white', 
-                    fontweight='bold',
-                    fontsize=20)
-            plt.title(f"Sex Balance of the '{name}'")
-            return fig
-
-
-        else:
-            print("Insufficient data for gender dominance calculation.")
-
-def unique_names_summary(df, year=1977):
-    year_data = df[df['year'] == year].copy()
-    total_names_per_sex = year_data.groupby('sex')['count'].sum()
-    unique_names_per_sex = year_data.groupby('sex')['name'].nunique()
-    percent_unique_names_per_sex = (unique_names_per_sex / total_names_per_sex) * 100
-
-    output = pd.DataFrame({
-        "Total Names": total_names_per_sex,
-        "Unique Names": unique_names_per_sex,
-        "Percent Unique": percent_unique_names_per_sex})
-    
-    return output
-
-def one_hit_wonders(ohw_data, year=1977, sex=None):
-    ohw_year = ohw_data[ohw_data['year'] == year]
-    
-    if sex:
-        ohw_year = ohw_year[ohw_year['sex'] == sex]
-    
-    if ohw_year.empty:
-        print(f"No one-hit wonders found in {year} for sex '{sex}'")
-        return pd.DataFrame()  # Return an empty DataFrame if no data is found
-    else:
-        one_hit_wonder_counts = ohw_year['sex'].value_counts()
-        common_one_hit_wonders = ohw_year.groupby(['name', 'sex'])['count'].sum().reset_index()
-
-        if sex:
-            most_common = common_one_hit_wonders.sort_values(by='count', ascending=False).iloc[0]
-            print(f"Most common {sex} one-hit wonder in {year}: {most_common['name']} with {most_common['count']} occurrences")
-        else:
-            try:
-                most_common_female = common_one_hit_wonders[common_one_hit_wonders['sex'] == 'F'].sort_values(by='count', ascending=False).iloc[0]
-                most_common_male = common_one_hit_wonders[common_one_hit_wonders['sex'] == 'M'].sort_values(by='count', ascending=False).iloc[0]
-
-                print(f"Most common female one-hit wonder: {most_common_female['name']} with {most_common_female['count']} occurrences")
-                print(f"Most common male one-hit wonder: {most_common_male['name']} with {most_common_male['count']} occurrences")
-            except:
-                print(f"Not enough data to calculate one-hit wonders by sex in {year}")
-
-        return ohw_year

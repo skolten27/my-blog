@@ -38,5 +38,7 @@ with tab2:
     st.plotly_chart(fig2)
 
 with tab3:
-    fig3 = plot_surprise_vs_price_change(data, symbol=stock_ticker)
+    min_surprise = st.number_input('Minimum Surprise Percentage', value=-1000)
+    max_surprise = st.number_input('Maximum Surprise Percentage', value=5000)
+    fig3 = plot_surprise_vs_price_change(data, symbol=stock_ticker, min_surprise=min_surprise, max_surprise=max_surprise)
     st.plotly_chart(fig3)
