@@ -19,6 +19,7 @@ def load_name_data():
 
 data = load_name_data()
 
+
 st.markdown("""
 # Analyzing Earnings and Market Trends
 Welcome to the earnings and market trends analysis app! 

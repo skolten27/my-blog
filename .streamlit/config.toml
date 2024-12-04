@@ -1,0 +1,7 @@
+[theme]
+base="light"  # Choose between "light" or "dark"
+primaryColor="#4CAF50"  # Green
+backgroundColor="#FFFFFF"  # White background
+secondaryBackgroundColor="#F5F5F5"  # Light gray background
+textColor="#333333"  # Dark gray text
+font="sans serif"  # Optional: "sans serif", "serif", or "monospace"
