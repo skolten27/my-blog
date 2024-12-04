@@ -89,7 +89,7 @@ def plot_density_surprise_percentage_by_year(df, year=None, width=800, height=60
 
     return fig
 
-def plot_surprise_vs_price_change_on_earnings(df, symbol, min_surprise=-1000, max_surprise=5000, width=800, height=600):
+def plot_surprise_vs_price_change(df, symbol, min_surprise=-1000, max_surprise=5000, width=800, height=600):
     # Filter data for the selected symbol
     df_filtered = df[df['symbol'] == symbol].copy()  # Use a copy to avoid modifying the original dataframe
 
