@@ -1,7 +1,7 @@
 [theme]
-base="light"  # Choose between "light" or "dark"
-primaryColor="#4CAF50"  # Green
-backgroundColor="#FFFFFF"  # White background
-secondaryBackgroundColor="#F5F5F5"  # Light gray background
-textColor="#333333"  # Dark gray text
-font="sans serif"  # Optional: "sans serif", "serif", or "monospace"
+base="dark"  
+primaryColor="#F63366"  # Vibrant pink
+backgroundColor="#0E1117"  # Dark gray
+secondaryBackgroundColor="#262730" # Light gray
+textColor="#333333"  # Dark gray
+font="sans serif"  
