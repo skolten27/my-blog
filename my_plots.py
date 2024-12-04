@@ -89,41 +89,34 @@ def plot_density_surprise_percentage_by_year(df, year=None, width=800, height=60
 
     return fig
 
-def plot_surprise_vs_price_change(df, symbol, min_surprise=-1000, max_surprise=5000, width=800, height=600):
+def plot_surprise_vs_price_change(df, symbol, min_surprise=-1000, max_surprise=5000, exclude_large_changes=False, width=800, height=600):
     # Filter data for the selected symbol
     df_filtered = df[df['symbol'] == symbol].copy()  # Use a copy to avoid modifying the original dataframe
 
-    # Ensure the necessary columns are in the correct format
-    df_filtered['price_date'] = pd.to_datetime(df_filtered['price_date'])
-    df_filtered['earnings_release_date'] = pd.to_datetime(df_filtered['earnings_release_date'])
-    df_filtered['4. close'] = pd.to_numeric(df_filtered['4. close'], errors='coerce')
+    # Ensure the necessary columns are numeric
+    df_filtered['price_change'] = pd.to_numeric(df_filtered['price_change'], errors='coerce')
 
-    # Filter data to only include rows where price_date == earnings_release_date
-    df_earnings_date = df_filtered[df_filtered['price_date'] == df_filtered['earnings_release_date']]
-
-    # Calculate the price change for the earnings release date
-    # (If you want to calculate it compared to the previous close, ensure that data is appropriately prepared)
-    df_earnings_date['price_change'] = (
-        (df_earnings_date['4. close'] - df_earnings_date['4. close'].shift(1)) / df_earnings_date['4. close'].shift(1)
-    ) * 100
+    # Apply the exclusion for large stock price changes if the checkbox is checked
+    if exclude_large_changes:
+        df_filtered = df_filtered[df_filtered['price_change'] <= 100]
 
     # Apply filtering based on min/max surprise percentage
-    df_filtered_final = df_earnings_date[
-        (df_earnings_date['surprisePercentage'] >= min_surprise) & 
-        (df_earnings_date['surprisePercentage'] <= max_surprise)
+    df_filtered = df_filtered[
+        (df_filtered['surprisePercentage'] >= min_surprise) &
+        (df_filtered['surprisePercentage'] <= max_surprise)
     ]
 
     # Check if there's data to plot
-    if df_filtered_final.empty:
+    if df_filtered.empty:
         raise ValueError(f"No data available for the selected filters: Min Surprise = {min_surprise}, Max Surprise = {max_surprise}")
 
     # Create the scatter plot
     fig = px.scatter(
-        df_filtered_final,
+        df_filtered,
         x='surprisePercentage',
         y='price_change',
-        color_discrete_sequence=['cyan'],
-        title=f'Earnings Surprise vs. Stock Price Change for {symbol} on Earnings Release Date',
+        color_discrete_sequence=['orange'],
+        title=f"Earnings Surprise vs. Stock Price Change for {symbol}",
         labels={
             'surprisePercentage': 'Earnings Surprise Percentage',
             'price_change': 'Stock Price Percentage Change'
@@ -134,10 +127,9 @@ def plot_surprise_vs_price_change(df, symbol, min_surprise=-1000, max_surprise=5
     fig.update_layout(
         width=width,
         height=height,
-        plot_bgcolor='#1C1C1E',
-        font=dict(size=12)  # Center the title
+        plot_bgcolor='#1C1C1E',  # Transparent background
+        paper_bgcolor='#1C1C1E',  # Transparent figure background
+        font=dict(color='#EAEAEA')  # Light font for dark themes
     )
-    #Change point size
-    fig.update_traces(marker=dict(size=10))
 
     return fig
