@@ -98,7 +98,7 @@ def plot_surprise_vs_price_change(df, symbol, min_surprise=-1000, max_surprise=5
 
     # Apply the exclusion for large stock price changes if the checkbox is checked
     if exclude_large_changes:
-        df_filtered = df_filtered[df_filtered['price_change'] <= 100]
+        df_filtered = df_filtered[df_filtered['price_change'] <= 1]
 
     # Apply filtering based on min/max surprise percentage
     df_filtered = df_filtered[
