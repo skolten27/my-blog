@@ -19,7 +19,7 @@ def plot_trading_volume_around_earnings(df, stock='WEN', width=800, height=600):
         (stock_data['days_before_earnings'] <= 7)
     ]
     
-    # Create the Plotly line chart
+    # Create the Plotly line chart with an area fill
     fig = px.line(
         earnings_window,
         x='days_before_earnings',
@@ -28,17 +28,26 @@ def plot_trading_volume_around_earnings(df, stock='WEN', width=800, height=600):
         markers=True,
     )
     
+    # Add the fill effect and customize traces
+    fig.update_traces(
+        line_color='orange',
+        mode='lines+markers',
+        fill='tozeroy',  # Fills the area below the line
+        fillcolor='rgba(255,165,0,0.2)'  # Light orange transparency
+    )
+    
     # Customize the layout
     fig.update_layout(
         xaxis_title='Days Before/After Earnings Release',
         yaxis_title='Trading Volume',
         width=width,
         height=height,
-        plot_bgcolor='white'
+        plot_bgcolor='white',
+        font=dict(size=12)
     )
-    fig.update_traces(line_color='orange', mode='lines+markers')
     
     return fig
+
 
 def name_frequencies_plot(df, year=200, width=800, height=600):
     year_data = df[df['year'] == year].copy()
