@@ -135,8 +135,9 @@ def plot_surprise_vs_price_change(df, symbol, min_surprise=-1000, max_surprise=5
         width=width,
         height=height,
         plot_bgcolor='white',
-        font=dict(size=12),
-        title=dict(x=0.5),  # Center the title
+        font=dict(size=12)  # Center the title
     )
+    #Change point size
+    fig.update_traces(marker=dict(size=10))
 
     return fig
