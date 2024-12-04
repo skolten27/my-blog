@@ -36,7 +36,7 @@ with tab1:
     st.plotly_chart(fig)
 
 with tab2:
-    fig2 = plot_density_surprise_percentage(data, stock = stock_ticke)
+    fig2 = plot_density_surprise_percentage(data,stock = stock_ticker)
     st.plotly_chart(fig2)
 
 with tab3:
