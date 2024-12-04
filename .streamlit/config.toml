@@ -2,6 +2,6 @@
 base="dark"  
 primaryColor="#F63366"  # Vibrant pink
 backgroundColor="#0E1117"  # Dark gray
-secondaryBackgroundColor="#262730" # Light gray
-textColor="#333333"  # Dark gray
+secondaryBackgroundColor="#262730" # lighter gray
+textColor="#F5F5F5"  # light gray
 font="sans serif"  
