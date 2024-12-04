@@ -94,6 +94,11 @@ def plot_surprise_vs_price_change(df, symbol, min_surprise=-1000, max_surprise=5
     df_filtered = df[df['symbol'] == symbol].copy()  # Use a copy to avoid modifying the original dataframe
 
     # Ensure the necessary columns are numeric
+    df_filtered['price_date'] = pd.to_datetime(df_filtered['price_date'])
+    df_filtered['earnings_release_date'] = pd.to_datetime(df_filtered['earnings_release_date'])
+    df_filtered['4. close'] = pd.to_numeric(df_filtered['4. close'], errors='coerce')
+
+    df_filtered['price_change'] = ((df_filtered['4. close'] - df_filtered['4. close'].shift(1)) / df_filtered['4. close'].shift(1)) * 100
     df_filtered['price_change'] = pd.to_numeric(df_filtered['price_change'], errors='coerce')
 
     # Apply the exclusion for large stock price changes if the checkbox is checked
