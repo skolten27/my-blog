@@ -89,6 +89,37 @@ def plot_density_surprise_percentage_by_year(df, year=None, width=800, height=60
 
     return fig
 
+def plot_surprise_vs_price_change(df, symbol, width=800, height=600):
+    # Filter data for the selected symbol
+    df_filtered = df[df['symbol'] == symbol]
+    
+    # Create the scatter plot
+    fig = px.scatter(
+        df_filtered,
+        x='surprisePercentage',
+        y='price_change',
+        color_discrete_sequence=['orange'],
+        title=f'Earnings Surprise vs. Stock Price Change for {symbol}',
+        labels={
+            'surprisePercentage': 'Earnings Surprise Percentage',
+            'price_change': 'Stock Price Percentage Change'
+        }
+    )
+    
+    # Update layout for better styling
+    fig.update_layout(
+        width=width,
+        height=height,
+        plot_bgcolor='white',
+        font=dict(size=12),
+        title=dict(x=0.5),  # Center the title
+    )
+    
+    # Optionally, adjust the x-axis limits as per your original plot
+    fig.update_xaxes(range=[-1000, 5000])
+    
+    return fig
+    
 
 
 def name_frequencies_plot(df, year=200, width=800, height=600):

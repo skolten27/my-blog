@@ -28,7 +28,7 @@ with st.sidebar:
     sex_input = st.selectbox("Sex for One Hit Wonders", ["M", "F"])
 
 
-tab1, tab2, tab3 = st.tabs(['Trading Volume', 'Surprise by Year', 'Trends'])
+tab1, tab2, tab3 = st.tabs(['Trading Volume', 'Surprise by Year', 'Surprise vs Stock Price Change'])
 
 with tab1: 
     stock_data = data[data['symbol']==stock_ticker].copy()
@@ -40,5 +40,5 @@ with tab2:
     st.plotly_chart(fig2)
 
 with tab3:
-    fig3 = name_trend_plot(data, name=n_names)
+    fig3 = plot_surprise_vs_price_change(data, symbol=stock_ticker)
     st.plotly_chart(fig3)
